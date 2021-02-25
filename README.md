@@ -106,8 +106,8 @@ int odds_sum = []<std::size_t... i>(std::index_sequence<i...>)
 ### Quick reference
 | Cenum | With enum | Explanation |
 | --- | --- | --- |
-| `MAKE_CENUM_Q(EnumName, int, ...)` | `enum class EnumName : int { ... }` | Create an enum named `EnumName` with elements of type `int`. Accessing an element from the enum will require the syntax: `EnumName::element_name` |
-| `MAKE_CENUMV_Q(EnumName, int, ...)` | `enum EnumName : int { ... }` | Create an enum named `EnumName` with elements of type `int`. Accessing an element from the enum will require the syntax: `element_name` |
+| **`MAKE_CENUM_Q(EnumName, int, ...)`** | `enum class EnumName : int { ... }` | Create an enum named `EnumName` with elements of type `int`. Accessing an element from the enum will require the syntax: `EnumName::element_name` |
+| **`MAKE_CENUMV_Q(EnumName, int, ...)`** | `enum EnumName : int { ... }` | Create an enum named `EnumName` with elements of type `int`. Accessing an element from the enum will require the syntax: `element_name` |
 Using the macros `MAKE_CENUM` and `MAKE_CENUMV` will do the same as above, but they let you configure more about the types used in the enums. You can use these macros if you need to change the `__size_type` of the enums (`unsigned long long` by default)
 
 From here, we assume that `MyEnum` is a Cenum.
@@ -184,7 +184,7 @@ MAKE_CENUMV_Q(MyEnum, int,
   val0, 0,
   val1, 1,
   [...]
-  val1000, 1000);
+  val999, 999);
 
 template <unsigned long long i>
 struct Print
@@ -222,7 +222,7 @@ main:
         xor     eax, eax
         call    printf
         [...]
-        mov     esi, 1000
+        mov     esi, 999
         mov     edi, OFFSET FLAT:.LC0
         xor     eax, eax
         call    printf
@@ -232,7 +232,31 @@ main:
 ```
 This has been verified with gcc10.2 and clang11.0.1 (both with `-Os`). And also verified using the `index_sequence` way of iterating.
 
+Below is what the compiler could have generated. The code is 'cleaner', however it now contains branching:
+```x86_64
+.LC0:
+        .string "%d\n"
+main:
+        push    rbx
+        xor     ebx, ebx
+.L2:
+        mov     rsi, rbx
+        mov     edi, OFFSET FLAT:.LC0
+        xor     eax, eax
+        inc     rbx
+        call    printf
+        cmp     rbx, 1000
+        jne     .L2
+        xor     eax, eax
+        pop     rbx
+        ret
+```
+The trick here is that the 1000 elements in the enum are just integers from 0 to 999.
+
 ### Speed
 In general, the speed of a Cenum is exactly the same as that of a regular enum.
 
-[TODO: Graph of compilation time/n° parameter]
+I have measured compilation time of Cenum's enums. Below is the compilation time of an enum in function of its number of elements:
+![Graph](graph.png)
+
+As you can see, the compilation time is proportional to the number of elements, which is to be expected because of the preprocessor iteration algorithm.
