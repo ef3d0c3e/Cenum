@@ -190,17 +190,17 @@ MAKE_CENUMV_Q(MyEnum, int,
 template <unsigned long long i>
 struct Print
 {
-	void operator()()
-	{
-		printf("%d\n", MyEnum::get<i>());
-	}
+  void operator()()
+  {
+    printf("%d\n", MyEnum::get<i>());
+  }
 };
 
 int main()
 {
-	MyEnum::iterate<0, MyEnum::size, 1, Print>();
+  MyEnum::iterate<0, MyEnum::size, 1, Print>();
 
-	return 0;
+  return 0;
 }
 ```
 
