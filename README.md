@@ -108,6 +108,7 @@ int odds_sum = []<std::size_t... i>(std::index_sequence<i...>)
 | --- | --- | --- |
 | **`MAKE_CENUM_Q(EnumName, int, ...)`** | `enum class EnumName : int { ... }` | Create an enum named `EnumName` with elements of type `int`. Accessing an element from the enum will require the syntax: `EnumName::element_name` |
 | **`MAKE_CENUMV_Q(EnumName, int, ...)`** | `enum EnumName : int { ... }` | Create an enum named `EnumName` with elements of type `int`. Accessing an element from the enum will require the syntax: `element_name` |
+
 Using the macros `MAKE_CENUM` and `MAKE_CENUMV` will do the same as above, but they let you configure more about the types used in the enums. You can use these macros if you need to change the `__size_type` of the enums (`unsigned long long` by default)
 
 From here, we assume that `MyEnum` is a Cenum.
