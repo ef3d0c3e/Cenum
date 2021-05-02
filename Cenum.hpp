@@ -70,8 +70,13 @@
 
 #define __CENUM_CVALUES(__N, __tp, __id, __val) \
 	constexpr static inline __tp __id = __val;
+#define __CENUM_CIF_ORD(__N, __tp, __id, __val) \
+	else if constexpr (x == __id)               \
+	{                                           \
+		return __N;                             \
+	}
 #define __CENUM_IF_ORD(__N, __tp, __id, __val) \
-	else if constexpr (x == __id)              \
+	else if (value == __id)                    \
 	{                                          \
 		return __N;                            \
 	}
@@ -210,7 +215,7 @@
 			{                                                                                               \
 				return __size_type();                                                                       \
 			}                                                                                               \
-			__CENUM_EXPAND(__CENUM_EVAL(__CENUM_MAP(__counter1, __enum_type, __CENUM_IF_ORD, __VA_ARGS__))) \
+			__CENUM_EXPAND(__CENUM_EVAL(__CENUM_MAP(__counter1, __enum_type, __CENUM_CIF_ORD, __VA_ARGS__))) \
 			else                                                                                            \
 			{                                                                                               \
 				[]<bool v = false>()                                                                        \
@@ -220,13 +225,29 @@
 				();                                                                                         \
 			}                                                                                               \
 		}                                                                                                   \
-                                                                                                            \
 		constexpr static inline __size_type size = __COUNTER__ - __counter1 - 1;                            \
                                                                                                             \
 	private:                                                                                                \
 		enum                                                                                                \
 		{                                                                                                   \
 			__counter2 = __COUNTER__                                                                        \
+		};                                                                                                  \
+                                                                                                            \
+	public:                                                                                                 \
+		consteval __size_type ord()                                                                        \
+		{                                                                                                   \
+			if (false)                                                                                      \
+			{                                                                                               \
+				return __size_type();                                                                       \
+			}                                                                                               \
+			__CENUM_EXPAND(__CENUM_EVAL(__CENUM_MAP(__counter2, __enum_type, __CENUM_IF_ORD, __VA_ARGS__))) \
+		}                                                                                                   \
+                                                                                                            \
+                                                                                                            \
+	private:                                                                                                \
+		enum                                                                                                \
+		{                                                                                                   \
+			__counter3 = __COUNTER__                                                                        \
 		};                                                                                                  \
                                                                                                             \
 	public:                                                                                                 \
@@ -237,7 +258,7 @@
 			{                                                                                               \
 				return __type();                                                                            \
 			}                                                                                               \
-			__CENUM_EXPAND(__CENUM_EVAL(__CENUM_MAP(__counter2, __enum_type, __CENUM_IF_GET, __VA_ARGS__))) \
+			__CENUM_EXPAND(__CENUM_EVAL(__CENUM_MAP(__counter3, __enum_type, __CENUM_IF_GET, __VA_ARGS__))) \
 			else                                                                                            \
 			{                                                                                               \
 				[]<bool v = false>()                                                                        \

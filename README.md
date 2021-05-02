@@ -118,6 +118,7 @@ From here, we assume that `MyEnum` is a Cenum.
 | **`MyEnum::size`** | This corresponds the number of elements in `MyEnum`. |
 | **`MyEnum::get<i>()`** | - **`i: size_type`**<br>Get the _i-th_ element of the enum (from the order they were declared).<br>It will `static_assert` if there are no elements at index _i_.  |
 | **`MyEnum::ord<value>()`** | - **`value: value_type`**<br>Get the index of `value`.<br>It will `static_assert` if `value` is not part of `MyEnum`.<br>In case multiple elements are sharing value `value`, it will return the index of the first of these elements. |
+| **`x.ord()`** | - **`x: MyEnum`**<br>Get the index of `x`.<br>It will give an implementation-specific error if `x` is out of bounds.<br>In case multiple elements are sharing the same value as `x`, it will return the index of the first of these elements. |
 | **`MyEnum::iterate<Beg, End, Inc, Functor>()`** | - **`Beg: size_type`**<br> - **`End: value_type`**<br> - **`Inc: value_type`**<br> - **`Functor:`** a functor that has a template paremater of type **`size_type`**<br>Will call `Functor<i>::opeator()` on an instance of `Functor<i>`. With _i_'s varying from `Beg` to `End` with an incremen of `Inc` between each call. |
 
 ## Implementation
